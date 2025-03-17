@@ -69,7 +69,7 @@ func (service *Service) GetPostCommentsRequest(config *GetPostCommentsConfig) (*
 	requestConfig := go_http.RequestConfig{
 		Method:        http.MethodGet,
 		RelativeUrl:   relativeUrl,
-		Url:           service.urlV20(relativeUrl),
+		Url:           service.urlV22(relativeUrl),
 		ResponseModel: &response,
 	}
 

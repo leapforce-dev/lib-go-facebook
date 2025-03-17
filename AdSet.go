@@ -162,7 +162,7 @@ func (service *Service) GetAdSets(config *GetAdSetsConfig) (*[]AdSet, *errortool
 
 	adSets := []AdSet{}
 
-	url := service.urlV20(fmt.Sprintf("act_%v/adsets?%s", config.AccountID, values.Encode()))
+	url := service.urlV22(fmt.Sprintf("act_%v/adsets?%s", config.AccountID, values.Encode()))
 
 	for {
 		adSetResponse := AdSetResponse{}

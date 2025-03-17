@@ -107,7 +107,7 @@ func (service *Service) GetAds(config *GetAdsConfig) (*[]Ad, *errortools.Error) 
 
 	ads := []Ad{}
 
-	url := service.urlV20(fmt.Sprintf("act_%v/ads?%s", config.AccountID, values.Encode()))
+	url := service.urlV22(fmt.Sprintf("act_%v/ads?%s", config.AccountID, values.Encode()))
 
 	for {
 		adResponse := AdResponse{}

@@ -31,11 +31,8 @@ type IgMediaInsight struct {
 type IgMediaInsightsMetric string
 
 const (
-	IgMediaInsightsMetricEngagement  IgMediaInsightsMetric = "engagement"
-	IgMediaInsightsMetricImpressions IgMediaInsightsMetric = "impressions"
-	IgMediaInsightsMetricReach       IgMediaInsightsMetric = "reach"
-	IgMediaInsightsMetricSaved       IgMediaInsightsMetric = "saved"
-	IgMediaInsightsMetricVideoViews  IgMediaInsightsMetric = "video_views"
+	IgMediaInsightsMetricReach IgMediaInsightsMetric = "reach"
+	IgMediaInsightsMetricSaved IgMediaInsightsMetric = "saved"
 )
 
 type IgMediaInsightsPeriod string
@@ -66,7 +63,7 @@ func (service *Service) GetIgMediaInsights(config *GetIgMediaInsightsConfig) (*[
 	}
 	values.Set("metric", strings.Join(metrics, ","))
 
-	url := service.urlV20(fmt.Sprintf("%s/insights?%s", config.MediaId, values.Encode()))
+	url := service.urlV22(fmt.Sprintf("%s/insights?%s", config.MediaId, values.Encode()))
 
 	insights := []IgMediaInsight{}
 

@@ -23,31 +23,43 @@ type IgUserInsightValue struct {
 }
 
 type IgUserInsight struct {
-	Name        IgUserInsightsMetric `json:"name"`
-	Period      IgUserInsightsPeriod `json:"period"`
-	Values      []IgUserInsightValue `json:"values"`
-	Title       string               `json:"title"`
-	Description string               `json:"description"`
-	Id          string               `json:"id"`
+	Name       IgUserInsightsMetric  `json:"name"`
+	Period     IgUserInsightsPeriod  `json:"period"`
+	Values     *[]IgUserInsightValue `json:"values"`
+	TotalValue *struct {
+		Value      int64 `json:"value"`
+		Breakdowns []struct {
+			DimensionKeys []string `json:"dimension_keys"`
+			Results       []struct {
+				DimensionValues []string               `json:"dimension_values"`
+				Value           string                 `json:"value"`
+				EndTime         f_types.DateTimeString `json:"end_time"`
+			} `json:"results"`
+		} `json:"breakdowns"`
+	} `json:"total_value"`
+	Title       string `json:"title"`
+	Description string `json:"description"`
+	Id          string `json:"id"`
 }
 
 type IgUserInsightsMetric string
 
 const (
-	IgUserInsightsMetricAudienceCity        IgUserInsightsMetric = "audience_city"
-	IgUserInsightsMetricAudienceCountry     IgUserInsightsMetric = "audience_country"
-	IgUserInsightsMetricAudienceGenderAge   IgUserInsightsMetric = "audience_gender_age"
-	IgUserInsightsMetricAudienceLocale      IgUserInsightsMetric = "audience_locale"
-	IgUserInsightsMetricEmailContacts       IgUserInsightsMetric = "email_contacts"
-	IgUserInsightsMetricFollowerCount       IgUserInsightsMetric = "follower_count"
-	IgUserInsightsMetricGetDirectionsClicks IgUserInsightsMetric = "get_directions_clicks"
-	IgUserInsightsMetricImpressions         IgUserInsightsMetric = "impressions"
-	IgUserInsightsMetricOnlineFollowers     IgUserInsightsMetric = "online_followers"
-	IgUserInsightsMetricPhoneCallClicks     IgUserInsightsMetric = "phone_call_clicks"
-	IgUserInsightsMetricProfileViews        IgUserInsightsMetric = "profile_views"
-	IgUserInsightsMetricReach               IgUserInsightsMetric = "reach"
-	IgUserInsightsMetricTextMessageClicks   IgUserInsightsMetric = "text_message_clicks"
-	IgUserInsightsMetricWebsiteClicks       IgUserInsightsMetric = "website_clicks"
+	IgUserInsightsMetricAudienceCity      IgUserInsightsMetric = "audience_city"
+	IgUserInsightsMetricAudienceCountry   IgUserInsightsMetric = "audience_country"
+	IgUserInsightsMetricAudienceGenderAge IgUserInsightsMetric = "audience_gender_age"
+	IgUserInsightsMetricAudienceLocale    IgUserInsightsMetric = "audience_locale"
+	IgUserInsightsMetricFollowerCount     IgUserInsightsMetric = "follower_count"
+	IgUserInsightsMetricOnlineFollowers   IgUserInsightsMetric = "online_followers"
+	IgUserInsightsMetricReach             IgUserInsightsMetric = "reach"
+	IgUserInsightsMetricViews             IgUserInsightsMetric = "views"
+)
+
+type IgUserInsightsMetricType string
+
+const (
+	IgUserInsightsMetricTypeTimeSeries IgUserInsightsMetricType = "time_series"
+	IgUserInsightsMetricTypeTotalValue IgUserInsightsMetricType = "total_value"
 )
 
 type IgUserInsightsPeriod string
@@ -63,6 +75,7 @@ type GetIgUserInsightsConfig struct {
 	UserId          string
 	UserAccessToken *string
 	Metrics         []IgUserInsightsMetric
+	MetricType      IgUserInsightsMetricType
 	Period          IgUserInsightsPeriod
 	Since           time.Time
 	Until           time.Time
@@ -83,11 +96,12 @@ func (service *Service) GetIgUserInsights(config *GetIgUserInsightsConfig) (*[]I
 		metrics = append(metrics, string(m))
 	}
 	values.Set("metric", strings.Join(metrics, ","))
+	values.Set("metric_type", string(config.MetricType))
 	values.Set("period", string(config.Period))
 	values.Set("since", fmt.Sprintf("%v", config.Since.Unix()))
 	values.Set("until", fmt.Sprintf("%v", config.Until.Unix()))
 
-	url := service.urlV20(fmt.Sprintf("%s/insights?%s", config.UserId, values.Encode()))
+	url := service.urlV22(fmt.Sprintf("%s/insights?%s", config.UserId, values.Encode()))
 
 	insights := []IgUserInsight{}
 

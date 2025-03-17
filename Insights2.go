@@ -78,7 +78,7 @@ func (service *Service) GetInsight2s(config *GetInsight2sConfig) (*[]Insight2s, 
 
 	var insight2s []Insight2s
 
-	url_ := service.urlV20(fmt.Sprintf("%s/insights?%s", config.Id, values.Encode()))
+	url_ := service.urlV22(fmt.Sprintf("%s/insights?%s", config.Id, values.Encode()))
 
 	for {
 		insight2sResponse := Insight2sResponse{}
