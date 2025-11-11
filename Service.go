@@ -86,10 +86,10 @@ func (service *Service) httpRequest(requestConfig *go_http.RequestConfig) (*http
 	}
 
 	if response != nil {
-		header := response.Header.Get("x-business-use-case-usage")
-		if header != "" {
+		xBusinessUseCaseUsageHeader := response.Header.Get("x-business-use-case-usage")
+		if xBusinessUseCaseUsageHeader != "" {
 			businessUseCaseUsage := xBusinessUseCaseUsage{}
-			err := json.Unmarshal([]byte(header), &businessUseCaseUsage)
+			err := json.Unmarshal([]byte(xBusinessUseCaseUsageHeader), &businessUseCaseUsage)
 			if err != nil {
 				errortools.CaptureError(err)
 			} else {
@@ -107,6 +107,26 @@ func (service *Service) httpRequest(requestConfig *go_http.RequestConfig) (*http
 							return service.httpRequest(requestConfig)
 						}
 					}
+				}
+			}
+		}
+
+		xFbAdsInsightsThrottleHeader := response.Header.Get("x-fb-ads-insights-throttle")
+		if xFbAdsInsightsThrottleHeader != "" {
+			if ig.Debug() {
+				fmt.Println(xFbAdsInsightsThrottleHeader)
+			}
+			fbAdsInsightsThrottle := xFbAdsInsightsThrottle{}
+			err := json.Unmarshal([]byte(xFbAdsInsightsThrottleHeader), &fbAdsInsightsThrottle)
+			if err != nil {
+				errortools.CaptureError(err)
+			} else {
+				if fbAdsInsightsThrottle.AccIdUtilPct == 100 || fbAdsInsightsThrottle.AppIdUtilPct == 100 {
+					// wait two seconds for the insights rate limit reset, see: https://developers.facebook.com/docs/marketing-api/insights/best-practices/#insightscallload
+					time.Sleep(time.Second * 2)
+
+					// retry
+					return service.httpRequest(requestConfig)
 				}
 			}
 		}
